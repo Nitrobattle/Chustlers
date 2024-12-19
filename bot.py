@@ -1,24 +1,26 @@
-from telegram.ext import Updater, CommandHandler
+import os
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# Bot-Token von @BotFather
-BOT_TOKEN = "8121562412:AAEGl1lCP47AaZdmbCRXDLVDEbc8gLWRjgw"
+# Bot-Token aus Umgebungsvariablen laden
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Start-Befehl
-def start(update, context):
-    update.message.reply_text("Hallo! Ich bin dein Telegram-Bot. Nutze /help für mehr Informationen.")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hallo! Ich bin dein Telegram-Bot. Nutze /help für mehr Informationen.")
 
-# Hauptfunktion
 def main():
-    # Bot-Instanz erstellen
-    updater = Updater(BOT_TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
+    if not BOT_TOKEN:
+        print("BOT_TOKEN ist nicht gesetzt!")
+        return
+
+    # Bot-Anwendung erstellen
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # Befehle hinzufügen
-    dispatcher.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("start", start))
 
     # Bot starten
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
